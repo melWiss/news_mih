@@ -1,4 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:news_mih/api.dart';
+import 'package:news_mih/news_model.dart';
+import 'news_card.dart';
+import 'package:http/http.dart';
 
 final Color darkBlue = Color.fromARGB(255, 18, 32, 47);
 
@@ -30,6 +36,12 @@ class NewsScreenState extends State<NewsScreen> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -45,18 +57,50 @@ class NewsScreenState extends State<NewsScreen> {
           ),
         ),
       ),
-      body: ListView.builder(
-        itemBuilder: (BuildContext ctx, int index) {
-          return Padding(
-            padding: EdgeInsets.all(15),
-            child: NewsCard(
-              title: "Title $index",
-              details: "mswkjfmqisbjqsmdijcqs",
-              imageUrl:
-                  "https://a4.espncdn.com/combiner/i?img=%2Fphoto%2F2021%2F0707%2Fr877295_1296x729_16-9.jpg",
-            ),
-          );
-        },
+      body: IndexedStack(
+        index: bottomIndex,
+        children: [
+          FutureBuilder<Response>(
+              future: get(Uri.parse(
+                  'https://newsapi.org/v2/everything?q=Apple&from=2021-07-08&sortBy=popularity&apiKey=f599cb8706914e578b866c0d0dc58a4f')),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  var data = snapshot.data!.body;
+                  var dataB = jsonDecode(data);
+                  return ListView.builder(
+                    itemCount: dataB['articles'].length,
+                    itemBuilder: (BuildContext ctx, int index) {
+                      return Padding(
+                        padding: EdgeInsets.all(15),
+                        child: NewsCard(
+                          newsModel:
+                              NewsModel.fromMap(dataB['articles'][index]),
+                        ),
+                      );
+                    },
+                  );
+                } else
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+              }),
+          ListView.builder(
+            itemBuilder: (BuildContext ctx, int index) {
+              return Padding(
+                padding: EdgeInsets.all(15),
+                child: NewsCard(
+                  newsModel: NewsModel(
+                    title: "Saved Article Title $index",
+                    details: "mswkjfmqisbjqsmdijcqs",
+                    imageUrl:
+                        "https://a4.espncdn.com/combiner/i?img=%2Fphoto%2F2021%2F0707%2Fr877295_1296x729_16-9.jpg",
+                    url: '',
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
           onTap: (int i) {
@@ -73,62 +117,6 @@ class NewsScreenState extends State<NewsScreen> {
               label: "Saved",
             ),
           ]),
-    );
-  }
-}
-
-class NewsCard extends StatelessWidget {
-  final String title;
-  final String imageUrl;
-  final String details;
-  NewsCard({
-    required this.title,
-    required this.imageUrl,
-    required this.details,
-  });
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      elevation: 4,
-      clipBehavior: Clip.antiAlias,
-      borderRadius: BorderRadius.circular(15),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Stack(
-            children: [
-              Image.network(imageUrl),
-              Positioned(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: Container(
-                    padding: EdgeInsets.all(8),
-                    color: Colors.pink,
-                    child: Text(
-                      title,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ),
-                ),
-                bottom: 5,
-                left: 5,
-              ),
-            ],
-          ),
-          Padding(
-            padding: EdgeInsets.all(5),
-            child: Text(
-              details,
-              textAlign: TextAlign.start,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
