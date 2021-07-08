@@ -1,3 +1,4 @@
+var apiUrl = 'https://news-app-wiss.herokuapp.com/getNews';
 var api = [
   {
     "source": {"id": null, "name": "Eonline.com"},
