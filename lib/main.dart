@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:news_mih/api.dart';
+import 'package:news_mih/db.dart';
 import 'package:news_mih/news_model.dart';
 import 'news_card.dart';
 import 'package:http/http.dart';
@@ -84,22 +85,26 @@ class NewsScreenState extends State<NewsScreen> {
                     child: CircularProgressIndicator(),
                   );
               }),
-          ListView.builder(
-            itemBuilder: (BuildContext ctx, int index) {
-              return Padding(
-                padding: EdgeInsets.all(15),
-                child: NewsCard(
-                  newsModel: NewsModel(
-                    title: "Saved Article Title $index",
-                    details: "mswkjfmqisbjqsmdijcqs",
-                    imageUrl:
-                        "https://a4.espncdn.com/combiner/i?img=%2Fphoto%2F2021%2F0707%2Fr877295_1296x729_16-9.jpg",
-                    url: '',
-                  ),
-                ),
-              );
-            },
-          ),
+          FutureBuilder<List<NewsModel>>(
+              future: getArticles(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (BuildContext ctx, int index) {
+                      return Padding(
+                        padding: EdgeInsets.all(15),
+                        child: NewsCard(
+                          newsModel: snapshot.data![index],
+                        ),
+                      );
+                    },
+                  );
+                } else
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+              }),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(

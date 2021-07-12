@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:news_mih/db.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'news_model.dart';
 
@@ -8,6 +10,7 @@ class NewsDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    getArticles().then((value) => print(value));
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -18,6 +21,26 @@ class NewsDetails extends StatelessWidget {
             color: Colors.blue,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.save,
+              color: Colors.blue,
+            ),
+            onPressed: () {
+              saveArticle(newsModel);
+            },
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.delete,
+              color: Colors.blue,
+            ),
+            onPressed: () {
+              deleteArticle(newsModel.url!);
+            },
+          ),
+        ],
         leading: IconButton(
           icon: Icon(
             Icons.close,
@@ -62,7 +85,9 @@ class NewsDetails extends StatelessWidget {
                 ),
               ],
             ),
-            onPressed: () {},
+            onPressed: () {
+              launch(newsModel.url!);
+            },
           ),
         ],
       ),
