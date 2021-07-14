@@ -1,22 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:news_mih/controller.dart';
 import 'package:news_mih/db.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'news_model.dart';
 
-class NewsDetails extends StatelessWidget {
+class NewsDetails extends StatefulWidget {
   const NewsDetails({Key? key, required this.newsModel}) : super(key: key);
   final NewsModel newsModel;
 
   @override
+  _NewsDetailsState createState() => _NewsDetailsState();
+}
+
+class _NewsDetailsState extends State<NewsDetails> {
+  @override
   Widget build(BuildContext context) {
-    getArticles().then((value) => print(value));
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         title: Text(
-          newsModel.title!,
+          widget.newsModel.title!,
           style: TextStyle(
             color: Colors.blue,
           ),
@@ -24,20 +29,19 @@ class NewsDetails extends StatelessWidget {
         actions: [
           IconButton(
             icon: Icon(
-              Icons.save,
+              newsStateController.articleExists(widget.newsModel)
+                  ? Icons.delete
+                  : Icons.save,
               color: Colors.blue,
             ),
             onPressed: () {
-              saveArticle(newsModel);
-            },
-          ),
-          IconButton(
-            icon: Icon(
-              Icons.delete,
-              color: Colors.blue,
-            ),
-            onPressed: () {
-              deleteArticle(newsModel.url!);
+              if (!newsStateController.articleExists(widget.newsModel)) {
+                newsStateController.saveArticle(widget.newsModel);
+                setState(() {});
+              } else {
+                newsStateController.deleteArticle(widget.newsModel.url!);
+                Navigator.of(context).pop();
+              }
             },
           ),
         ],
@@ -56,13 +60,13 @@ class NewsDetails extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Card(
-              child: Image.network(newsModel.imageUrl!),
+              child: Image.network(widget.newsModel.imageUrl!),
             ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              newsModel.details!,
+              widget.newsModel.details!,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
@@ -86,7 +90,7 @@ class NewsDetails extends StatelessWidget {
               ],
             ),
             onPressed: () {
-              launch(newsModel.url!);
+              launch(widget.newsModel.url!);
             },
           ),
         ],

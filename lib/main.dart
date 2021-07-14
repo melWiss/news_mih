@@ -2,10 +2,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:news_mih/api.dart';
+import 'package:news_mih/controller.dart';
 import 'package:news_mih/db.dart';
 import 'package:news_mih/news_model.dart';
 import 'news_card.dart';
 import 'package:http/http.dart';
+
+import 'news_list.dart';
 
 final Color darkBlue = Color.fromARGB(255, 18, 32, 47);
 
@@ -61,50 +64,8 @@ class NewsScreenState extends State<NewsScreen> {
       body: IndexedStack(
         index: bottomIndex,
         children: [
-          FutureBuilder<Response>(
-              future: get(Uri.parse(
-                  'https://newsapi.org/v2/everything?q=Apple&from=2021-07-08&sortBy=popularity&apiKey=f599cb8706914e578b866c0d0dc58a4f')),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  var data = snapshot.data!.body;
-                  var dataB = jsonDecode(data);
-                  return ListView.builder(
-                    itemCount: dataB['articles'].length,
-                    itemBuilder: (BuildContext ctx, int index) {
-                      return Padding(
-                        padding: EdgeInsets.all(15),
-                        child: NewsCard(
-                          newsModel:
-                              NewsModel.fromMap(dataB['articles'][index]),
-                        ),
-                      );
-                    },
-                  );
-                } else
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-              }),
-          FutureBuilder<List<NewsModel>>(
-              future: getArticles(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return ListView.builder(
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (BuildContext ctx, int index) {
-                      return Padding(
-                        padding: EdgeInsets.all(15),
-                        child: NewsCard(
-                          newsModel: snapshot.data![index],
-                        ),
-                      );
-                    },
-                  );
-                } else
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-              }),
+          NewsListWidget(stream: newsStateController.networkNewsStream),
+          NewsListWidget(stream: newsStateController.cachedNewsStream),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
