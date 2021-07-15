@@ -18,7 +18,7 @@ class _NewsDetailsState extends State<NewsDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).canvasColor,
         elevation: 0,
         title: Text(
           widget.newsModel.title!,
@@ -49,7 +49,7 @@ class _NewsDetailsState extends State<NewsDetails> {
         leading: IconButton(
           icon: Icon(
             Icons.close,
-            color: Colors.black,
+            // color: Colors.black,
           ),
           onPressed: () {
             Navigator.of(context).pop();

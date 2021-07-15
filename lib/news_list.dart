@@ -12,30 +12,33 @@ class NewsListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<List<NewsModel>>(
-        stream: stream,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            if (snapshot.data!.length != 0)
-              return ListView.builder(
-                itemCount: snapshot.data!.length,
-                itemBuilder: (BuildContext ctx, int index) {
-                  return Padding(
-                    padding: EdgeInsets.all(15),
-                    child: NewsCard(
-                      newsModel: snapshot.data![index],
-                    ),
-                  );
-                },
-              );
-            else
+    return Container(
+      color: Theme.of(context).canvasColor,
+      child: StreamBuilder<List<NewsModel>>(
+          stream: stream,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              if (snapshot.data!.length != 0)
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (BuildContext ctx, int index) {
+                    return Padding(
+                      padding: EdgeInsets.all(15),
+                      child: NewsCard(
+                        newsModel: snapshot.data![index],
+                      ),
+                    );
+                  },
+                );
+              else
+                return Center(
+                  child: Text("There's not article for the moment."),
+                );
+            } else
               return Center(
-                child: Text("There's not article for the moment."),
+                child: CircularProgressIndicator(),
               );
-          } else
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-        });
+          }),
+    );
   }
 }

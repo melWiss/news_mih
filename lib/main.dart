@@ -5,6 +5,7 @@ import 'package:news_mih/api.dart';
 import 'package:news_mih/controller.dart';
 import 'package:news_mih/db.dart';
 import 'package:news_mih/news_model.dart';
+import 'package:news_mih/news_pages.dart';
 import 'news_card.dart';
 import 'package:http/http.dart';
 
@@ -21,6 +22,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        canvasColor: Color(0xFF262626),
+        unselectedWidgetColor: Colors.white30,
+        iconTheme: IconThemeData(color: Colors.white),
+        textTheme: TextTheme(
+          bodyText2: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+      ),
       home: NewsScreen(),
     );
   }
@@ -49,22 +60,35 @@ class NewsScreenState extends State<NewsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: Icon(
-          Icons.account_balance_rounded,
-          color: Colors.blue,
-        ),
-        backgroundColor: Colors.white,
-        title: Text(
-          "News App",
-          style: TextStyle(
-            color: Colors.blue,
-          ),
+        backgroundColor:
+            bottomIndex == 0 ? Colors.transparent : Color(0xFF292929),
+        centerTitle: true,
+        elevation: bottomIndex * 2,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(right: 8.0),
+              child: Icon(
+                Icons.account_balance_rounded,
+                color: Colors.blue,
+              ),
+            ),
+            Text(
+              "News App",
+              style: TextStyle(
+                color: Colors.blue,
+                fontSize: Theme.of(context).textTheme.headline6!.fontSize,
+              ),
+            ),
+          ],
         ),
       ),
+      extendBodyBehindAppBar: true,
       body: IndexedStack(
         index: bottomIndex,
         children: [
-          NewsListWidget(
+          NewsPagesWidget(
             stream: newsStateController.networkArticlesStream,
           ),
           NewsListWidget(
